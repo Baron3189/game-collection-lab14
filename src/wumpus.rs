@@ -109,7 +109,7 @@ pub fn shoot(target: u32, wumpus: u32) -> bool {
 }
 
 pub fn bat_destination() -> u32 {
-    rand::rng().random_range(1..=8)
+    rand::rng().random_range(1..=ROOM_COUNT)
 }
 
 /// With probability 3/4 the Wumpus moves to a random exit; otherwise it stays.
@@ -129,7 +129,7 @@ pub fn wake_wumpus(wumpus: u32) -> u32 {
 
 fn read_exit(room: u32, prompt: &str) -> u32 {
     loop {
-        let target = read_int(prompt, 1, 8);
+        let target = read_int(prompt, 1, ROOM_COUNT);
         if is_exit(room, target) {
             return target;
         }
@@ -139,23 +139,23 @@ fn read_exit(room: u32, prompt: &str) -> u32 {
 
 pub fn play() {
     let (mut player, pit, bats, mut wumpus) = place_hazards();
-    let mut arrows = 3;
+    let mut arrows = ARROWS;
     println!("You enter the cave with {arrows} arrows.");
     loop {
         println!();
         let [a, b, c] = exits(player);
         println!("You are in room {player}. Exits: {a}, {b}, {c}.");
-        print_warnings(player, &[pit], &[bats], wumpus);
+        print_warnings(player, &pit, &bats, wumpus);
         print!("Move or shoot (m/s)? ");
         io::stdout().flush().expect("failed to flush output");
         let action = read_line_trimmed().to_ascii_lowercase();
         if action == "m" {
             player = read_exit(player, "Move to room: ");
-            if player == bats {
+            if contains(&bats, player) {
                 println!("Bats carry you away!");
                 player = bat_destination();
             }
-            if player == pit {
+            if contains(&pit, player) {
                 println!("You fell into a pit. You lose.");
                 return;
             }
@@ -216,15 +216,15 @@ mod tests {
     }
 
     // Update this test when `place_hazards` changes.
-    #[test]
-    fn hazards_are_distinct() {
-        for _ in 0..200 {
-            let (player, pit, bats, wumpus) = place_hazards();
-            assert!(player != pit && player != bats && player != wumpus);
-            assert!(pit != bats && pit != wumpus && bats != wumpus);
-        }
+#[test]
+fn hazards_are_distinct() {
+    let (player, pits, bats, wumpus) = place_hazards();
+    let all = [player, pits[0], pits[1], bats[0], bats[1], wumpus];
+    assert!(all_distinct(&all));
+    for room in all {
+        assert!((1..=ROOM_COUNT).contains(&room));
     }
-
+}
     // TODO: at least three tests of your own:
     //   one for `contains` (include the empty list),
     //   one for `all_distinct` (a list with a repeat and a list without),
