@@ -215,6 +215,27 @@ mod tests {
         }
     }
 
+#[test]
+fn contains_handles_empty_end_and_missing() {
+    assert!(!contains(&[], 5));
+    assert!(contains(&[7, 12, 3], 3));
+    assert!(!contains(&[7, 12, 3], 5));
+}
+
+#[test]
+fn all_distinct_handles_empty_one_repeat_and_none() {
+    assert!(all_distinct(&[]));
+    assert!(all_distinct(&[8]));
+    assert!(!all_distinct(&[4, 9, 4]));
+    assert!(all_distinct(&[1, 2, 3, 4, 5]));
+    assert!(!all_distinct(&[1, 2, 3, 4, 5, 1]));   // repeat at the end
+}
+
+#[test]
+fn exits_of_room_one_match_the_table() {
+    assert_eq!(exits(1), [2, 5, 8]);
+}
+
     // Update this test when `place_hazards` changes.
 #[test]
 fn hazards_are_distinct() {
