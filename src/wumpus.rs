@@ -48,10 +48,15 @@ pub fn contains(values: &[u32], target: u32) -> bool {
     contains(&values[1..], target)        
 }
 // TODO: recursive. True if no value appears twice in `values`. Use `contains`.
-pub fn all_distinct(_values: &[u32]) -> bool {
-    todo!("Implement all_distinct")
+pub fn all_distinct(values: &[u32]) -> bool {
+    if values.len() <= 1 {
+        return true;                             
+    }
+    if contains(&values[1..], values[0]) {
+        return false;                            
+    }
+    all_distinct(&values[1..])                    
 }
-
 // TODO: replace this `match` with a lookup in CAVE. It should return [u32; 3].
 pub fn exits(room: u32) -> [u32; 3] {
     CAVE[(room - 1) as usize]
