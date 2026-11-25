@@ -1,153 +1,112 @@
 # Call Traces
 
-## Task 1: contains# Call Traces
-
 ## Task 1: contains
 
-`contains(values, target)` answers: is `target` in the list?
-
-### Trace A: contains(&[7, 12, 3], 3) (found at the end)
-
-Newest call on top. Calls pile up going down the page; answers flow back up.
+### Trace A: contains(&[7, 12, 3], 3)
 
 ```
-+-----------------------------------------------+
-| Call 3: contains(&[3], 3)                     |
-| receives: [3], target 3                       |
-| list not empty; first item 3 == target 3      |
-| returns: true                                 |
-+-----------------------------------------------+
-        | returns true to Call 2
-+-----------------------------------------------+
-| Call 2: contains(&[12, 3], 3)                 |
-| receives: [12, 3], target 3                   |
-| first item 12 != 3, so ask about the rest     |
-|   -> contains(&[3], 3) (Call 3)               |
-| returns: true (whatever Call 3 returned)      |
-+-----------------------------------------------+
-        | returns true to Call 1
-+-----------------------------------------------+
-| Call 1: contains(&[7, 12, 3], 3)              |
-| receives: [7, 12, 3], target 3                |
-| first item 7 != 3, so ask about the rest      |
-|   -> contains(&[12, 3], 3) (Call 2)           |
-| returns: true (whatever Call 2 returned)      |
-+-----------------------------------------------+
++----------------------------------------------+
+| Call 3: contains(&[3], 3)                    |
+| receives: [3], target 3                      |
+| first item 3 == 3                            |
+| returns: true                                |
++----------------------------------------------+
+        | true
++----------------------------------------------+
+| Call 2: contains(&[12, 3], 3)                |
+| receives: [12, 3], target 3                  |
+| 12 != 3, asks the rest                       |
+| returns: contains(&[3], 3) = true            |
++----------------------------------------------+
+        | true
++----------------------------------------------+
+| Call 1: contains(&[7, 12, 3], 3)             |
+| receives: [7, 12, 3], target 3               |
+| 7 != 3, asks the rest                        |
+| returns: contains(&[12, 3], 3) = true        |
++----------------------------------------------+
 ```
 
-Total calls: 3. Final answer: **true**.
+Calls: 3. Answer: **true**.
 
-### Trace B: contains(&[7, 12, 3], 5) (not found)
-
-```
-+-----------------------------------------------+
-| Call 4: contains(&[], 5)                      |
-| receives: [] (empty), target 5                |
-| BASE CASE: an empty list contains nothing     |
-| returns: false                                |
-+-----------------------------------------------+
-        | returns false to Call 3
-+-----------------------------------------------+
-| Call 3: contains(&[3], 5)                     |
-| receives: [3], target 5                       |
-| first item 3 != 5, so ask about the rest      |
-|   -> contains(&[], 5) (Call 4)                |
-| returns: false (whatever Call 4 returned)    |
-+-----------------------------------------------+
-        | returns false to Call 2
-+-----------------------------------------------+
-| Call 2: contains(&[12, 3], 5)                 |
-| receives: [12, 3], target 5                   |
-| first item 12 != 5, so ask about the rest     |
-|   -> contains(&[3], 5) (Call 3)               |
-| returns: false (whatever Call 3 returned)     |
-+-----------------------------------------------+
-        | returns false to Call 1
-+-----------------------------------------------+
-| Call 1: contains(&[7, 12, 3], 5)              |
-| receives: [7, 12, 3], target 5                |
-| first item 7 != 5, so ask about the rest      |
-|   -> contains(&[12, 3], 5) (Call 2)           |
-| returns: false (whatever Call 2 returned)     |
-+-----------------------------------------------+
-```
-
-Total calls: 4. Final answer: **false**.
-
-### Observations
-- Each call receives a shorter list than the one that made it (the slice after the first item), so the calls always reach the base case.
-- In Trace A the "first item is the target" check stops the recursion early. In Trace B nothing matches, so the calls go all the way down to the empty list.
-
-`contains(values, target)` answers: is `target` in the list?
-
-### Trace A: contains(&[7, 12, 3], 3) (found at the end)
-
-Newest call on top. Calls pile up going down the page; answers flow back up.
+### Trace B: contains(&[7, 12, 3], 5)
 
 ```
-+-----------------------------------------------+
-| Call 3: contains(&[3], 3)                     |
-| receives: [3], target 3                       |
-| list not empty; first item 3 == target 3      |
-| returns: true                                 |
-+-----------------------------------------------+
-        | returns true to Call 2
-+-----------------------------------------------+
-| Call 2: contains(&[12, 3], 3)                 |
-| receives: [12, 3], target 3                   |
-| first item 12 != 3, so ask about the rest     |
-|   -> contains(&[3], 3) (Call 3)               |
-| returns: true (whatever Call 3 returned)      |
-+-----------------------------------------------+
-        | returns true to Call 1
-+-----------------------------------------------+
-| Call 1: contains(&[7, 12, 3], 3)              |
-| receives: [7, 12, 3], target 3                |
-| first item 7 != 3, so ask about the rest      |
-|   -> contains(&[12, 3], 3) (Call 2)           |
-| returns: true (whatever Call 2 returned)      |
-+-----------------------------------------------+
++----------------------------------------------+
+| Call 4: contains(&[], 5)                     |
+| receives: [], target 5                       |
+| base case (empty list)                       |
+| returns: false                               |
++----------------------------------------------+
+        | false
++----------------------------------------------+
+| Call 3: contains(&[3], 5)                    |
+| receives: [3], target 5                      |
+| 3 != 5, asks the rest                        |
+| returns: contains(&[], 5) = false            |
++----------------------------------------------+
+        | false
++----------------------------------------------+
+| Call 2: contains(&[12, 3], 5)                |
+| receives: [12, 3], target 5                  |
+| 12 != 5, asks the rest                       |
+| returns: contains(&[3], 5) = false           |
++----------------------------------------------+
+        | false
++----------------------------------------------+
+| Call 1: contains(&[7, 12, 3], 5)             |
+| receives: [7, 12, 3], target 5               |
+| 7 != 5, asks the rest                        |
+| returns: contains(&[12, 3], 5) = false       |
++----------------------------------------------+
 ```
 
-Total calls: 3. Final answer: **true**.
+Calls: 4. Answer: **false**.
 
-### Trace B: contains(&[7, 12, 3], 5) (not found)
+## Task 6: all_distinct
+
+### Trace C: all_distinct(&[4, 9, 4])
 
 ```
-+-----------------------------------------------+
-| Call 4: contains(&[], 5)                      |
-| receives: [] (empty), target 5                |
-| BASE CASE: an empty list contains nothing     |
-| returns: false                                |
-+-----------------------------------------------+
-        | returns false to Call 3
-+-----------------------------------------------+
-| Call 3: contains(&[3], 5)                     |
-| receives: [3], target 5                       |
-| first item 3 != 5, so ask about the rest      |
-|   -> contains(&[], 5) (Call 4)                |
-| returns: false (whatever Call 4 returned)    |
-+-----------------------------------------------+
-        | returns false to Call 2
-+-----------------------------------------------+
-| Call 2: contains(&[12, 3], 5)                 |
-| receives: [12, 3], target 5                   |
-| first item 12 != 5, so ask about the rest     |
-|   -> contains(&[3], 5) (Call 3)               |
-| returns: false (whatever Call 3 returned)     |
-+-----------------------------------------------+
-        | returns false to Call 1
-+-----------------------------------------------+
-| Call 1: contains(&[7, 12, 3], 5)              |
-| receives: [7, 12, 3], target 5                |
-| first item 7 != 5, so ask about the rest      |
-|   -> contains(&[12, 3], 5) (Call 2)           |
-| returns: false (whatever Call 2 returned)     |
-+-----------------------------------------------+
++----------------------------------------------+
+| Call 1: all_distinct(&[4, 9, 4])             |
+| receives: [4, 9, 4]                          |
+| asks: contains(&[9, 4], 4) -> true           |
+| returns: false                               |
++----------------------------------------------+
 ```
 
-Total calls: 4. Final answer: **false**.
+Calls: 1. Answer: **false**.
 
-### Observations
-- Each call receives a shorter list than the one that made it (the slice after the first item), so the calls always reach the base case.
-- In Trace A the "first item is the target" check stops the recursion early. In Trace B nothing matches, so the calls go all the way down to the empty list.
+### Trace D: all_distinct(&[1, 2, 3])
+
+```
++----------------------------------------------+
+| Call 3: all_distinct(&[3])                   |
+| receives: [3]                                |
+| base case (one item)                         |
+| returns: true                                |
++----------------------------------------------+
+        | true
++----------------------------------------------+
+| Call 2: all_distinct(&[2, 3])                |
+| receives: [2, 3]                             |
+| asks: contains(&[3], 2) -> false             |
+| returns: all_distinct(&[3]) = true           |
++----------------------------------------------+
+        | true
++----------------------------------------------+
+| Call 1: all_distinct(&[1, 2, 3])             |
+| receives: [1, 2, 3]                          |
+| asks: contains(&[2, 3], 1) -> false          |
+| returns: all_distinct(&[2, 3]) = true        |
++----------------------------------------------+
+```
+
+Calls: 3. Answer: **true**.
+
+
+
+
+
+
