@@ -61,19 +61,33 @@ pub fn is_exit(room: u32, target: u32) -> bool {
  contains(&exits(room), target)
 }
 
-pub fn print_warnings(room: u32, pit: u32, bats: u32, wumpus: u32) {
-    let [a, b, c] = exits(room);
-    if a == pit || b == pit || c == pit {
+pub fn print_warnings(room: u32, pits: &[u32], bats: &[u32], wumpus: u32) {
+    let mut draft = false;
+    let mut rustle = false;
+    let mut smell = false;
+
+    for e in exits(room) {
+        if contains(pits, e) {
+            draft = true;
+        }
+        if contains(bats, e) {
+            rustle = true;
+        }
+        if e == wumpus {
+            smell = true;
+        }
+    }
+
+    if draft {
         println!("You feel a draft.");
     }
-    if a == bats || b == bats || c == bats {
+    if rustle {
         println!("You hear rustling.");
     }
-    if a == wumpus || b == wumpus || c == wumpus {
+    if smell {
         println!("You smell a Wumpus.");
     }
 }
-
 /// Returns (player, pit, bats, wumpus), all in different rooms.
 pub fn place_hazards() -> (u32, u32, u32, u32) {
     let mut rng = rand::rng();
@@ -129,7 +143,7 @@ pub fn play() {
         println!();
         let [a, b, c] = exits(player);
         println!("You are in room {player}. Exits: {a}, {b}, {c}.");
-        print_warnings(player, pit, bats, wumpus);
+        print_warnings(player, &[pit], &[bats], wumpus);
         print!("Move or shoot (m/s)? ");
         io::stdout().flush().expect("failed to flush output");
         let action = read_line_trimmed().to_ascii_lowercase();
